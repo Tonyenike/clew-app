@@ -1,11 +1,20 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Route, Switch } from 'react-router';
+import { Container } from 'semantic-ui-react';
+import Main from './components/Main';
+import NewGame from './components/NewGame';
 
 class App extends Component {
   render() {
+    const { store } = this.props;
     return (
-      <div>Clew App</div>
+      <Container>
+        <h1>Clew</h1>
+        <Switch>
+          <Route exact={true} path="/" render={() => <Main store={store} />} />
+          <Route path="/new-game" render={() => <NewGame store={store} />} />
+        </Switch>
+      </Container>
     );
   }
 }
