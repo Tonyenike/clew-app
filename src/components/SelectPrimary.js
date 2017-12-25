@@ -23,10 +23,10 @@ export default class SelectPrimary extends Component {
         <Card.Group>
           {primary ?
             <SelectableCard key={primary} title={primary}
-              selected={primary} />
+              selected={primary} onSelected={() => {}} />
               : peopleCards}
-            </Card.Group>
-          </Segment>
+        </Card.Group>
+      </Segment>
     );
   }
 }

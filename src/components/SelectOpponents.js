@@ -4,7 +4,7 @@ import { Card, Segment } from 'semantic-ui-react';
 import SelectableCard from './SelectableCard';
 
 @observer
-export default class SelectPlayers extends Component {
+export default class SelectOpponents extends Component {
 
   clickPlayer(player) {
     this.props.togglePlayer(player);
