@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router';
 import { computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Button, Segment, Step } from 'semantic-ui-react';
@@ -8,6 +9,7 @@ import SelectPrimary from './SelectPrimary';
 import SelectOpponents from './SelectOpponents';
 import SelectCards from './SelectCards';
 
+@withRouter
 @observer
 export default class NewGame extends Component {
 
@@ -129,6 +131,40 @@ export default class NewGame extends Component {
     }
   }
 
+  startGame = () => {
+    const {
+      store: {
+        gameStore,
+        cardStore: {
+          people,
+          weapons,
+          rooms,
+        }
+      }
+    } = this.props;
+    const game = {
+      primary_player: this.primary,
+      players: this.allPlayers.map(name => {
+        let player = {
+          name: name,
+          card_count: this.playerCardCounts.get(name),
+        };
+
+        if (name === this.primary) {
+          const peopleCards = this.primaryCards.filter(card => people.includes(card));
+          const weaponCards = this.primaryCards.filter(card => weapons.includes(card));
+          const roomCards = this.primaryCards.filter(card => rooms.includes(card));
+          player = Object.assign(player,
+            { people: peopleCards, weapons: weaponCards, rooms: roomCards });
+        }
+
+        return player;
+      }),
+    };
+    const { history } = this.props;
+    gameStore.startGame(game).then(() => history.push('/play'));
+  };
+
   render() {
     const stepsElements = this.steps.map((step, idx) => (
       <Step key={idx} active={step.active} completed={step.completed} title={step.title} />
@@ -143,11 +179,17 @@ export default class NewGame extends Component {
         {activeIndex === 1 && this.steps[0].component()}
         {activeStep.component()}
         <Segment basic>
-          <Button disabled={!activeStep.completed}
-            onClick={() => this.nextStep(activeIndex)}
-            primary>Next</Button>
-        </Segment>
-      </div>
+          {activeStep.title === 'Select your cards' ?
+            <Button disabled={!activeStep.completed}
+              onClick={this.startGame}
+              positive>Start!</Button>
+            :
+            <Button disabled={!activeStep.completed}
+              onClick={() => this.nextStep(activeIndex)}
+              primary>Next</Button>
+          }
+          </Segment>
+        </div>
     );
   }
 }
