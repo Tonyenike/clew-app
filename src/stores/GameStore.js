@@ -1,4 +1,5 @@
 import { computed, observable } from 'mobx';
+import { API_ROOT } from '../config';
 
 export default class GameStore {
   @observable games = [];
@@ -17,7 +18,7 @@ export default class GameStore {
   }
 
   getGames() {
-    return fetch('http://localhost:5000/api/v1/games')
+    return fetch(`${API_ROOT}/games`)
       .then(res => {
         if (res.ok) {
           return res.json();
@@ -28,7 +29,7 @@ export default class GameStore {
   }
 
   getGame(id) {
-    return fetch(`http://localhost:5000/api/v1/games/${id}`)
+    return fetch(`${API_ROOT}/games/${id}`)
       .then(res => {
         if (res.ok) {
           return res.json();
@@ -39,11 +40,41 @@ export default class GameStore {
   }
 
   createGame(game) {
-    return fetch('http://localhost:5000/api/v1/games', {
-        method: 'POST',
-        mode: 'cors',
-        body: JSON.stringify(game),
+    return fetch(`${API_ROOT}/games`, {
+      method: 'POST',
+      mode: 'cors',
+      body: JSON.stringify(game),
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        }
       })
+      .then(json => json.data)
+      .catch(err => console.log(err));
+  }
+
+  addGuess(guess) {
+    return fetch(`${API_ROOT}/games/${this.currentGameId}/guesses`, {
+      method: 'POST',
+      mode: 'cors',
+      body: JSON.stringify(guess),
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then(json => json.data)
+      .catch(err => console.log(err));
+  }
+
+  addAccusation(accusation) {
+    return fetch(`${API_ROOT}/games/${this.currentGameId}/accusations`, {
+      method: 'POST',
+      mode: 'cors',
+      body: JSON.stringify(accusation),
+    })
       .then(res => {
         if (res.ok) {
           return res.json();

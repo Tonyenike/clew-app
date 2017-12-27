@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { computed, observable } from 'mobx';
+import { computed, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { Link } from 'react-router-dom';
-import { Form, Radio, Segment, Select } from 'semantic-ui-react';
+import { Button, Form, Radio, Segment, Select } from 'semantic-ui-react';
 
 @observer
 export default class PlayGame extends Component {
@@ -12,12 +12,10 @@ export default class PlayGame extends Component {
     weapon: '',
     room: '',
   };
-  @observable accusationCorrect = false;
   @observable currentGame;
 
   @observable guess = {
     guesser: '',
-    ...this.cards,
     was_card_shown: false,
     answerer: '',
     card_shown: '',
@@ -25,7 +23,6 @@ export default class PlayGame extends Component {
 
   @observable accusation = {
     accuser: '',
-    ...this.cards,
     is_correct: false,
   }
 
@@ -44,6 +41,16 @@ export default class PlayGame extends Component {
   toggleAccusationCorrect = () => this.accusation.is_correct = !this.accusation.is_correct;
   setAnswerer = (e, { value }) => this.guess.answerer = value;
   setCardShown = (e, { value }) => this.guess.card_shown = value;
+  submit = () => {
+    const { store: { gameStore } } = this.props;
+    if (this.turnType === 'guess') {
+      let guessWithCards = Object.assign(toJS(this.guess), toJS(this.cards));
+      gameStore.addGuess(guessWithCards);
+    } else {
+      let accusationWithCards = Object.assign(toJS(this.accusation), toJS(this.cards));
+      gameStore.addAccusation(accusationWithCards);
+    }
+  };
 
   componentWillMount() {
     const { store: { gameStore: { currentGame } } } = this.props;
@@ -64,7 +71,7 @@ export default class PlayGame extends Component {
           const primary = this.currentGame.players
             .find(player => player.name === this.currentGame.primary_player);
           const primaryCards = [...primary.people, ...primary.weapons, ...primary.rooms];
-          return !primaryCards.includes(card);
+          return primaryCards.includes(card);
         })
         .map(card => ({ value: card, text: card }));
       const guessFields = (
@@ -175,6 +182,7 @@ export default class PlayGame extends Component {
             </Form.Field>
             {this.turnType === 'guess' && guessFields}
             {this.turnType === 'accusation' && accusationFields}
+            <Button onClick={this.submit} primary>Submit</Button>
           </Form>
         </Segment>
       );
