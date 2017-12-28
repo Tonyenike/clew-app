@@ -1,5 +1,6 @@
 import { computed, observable } from 'mobx';
 import { API_ROOT } from '../config';
+import { toCamelCase, toSnakeCase } from './JsonUtils';
 
 export default class GameStore {
   @observable games = [];
@@ -25,6 +26,7 @@ export default class GameStore {
         }
       })
       .then(json => this.games = json.data)
+      .then(games => games.map(toCamelCase))
       .catch(err => console.log(err));
   }
 
@@ -36,6 +38,7 @@ export default class GameStore {
         }
       })
       .then(json => this.games = json.data)
+      .then(toCamelCase)
       .catch(err => console.log(err));
   }
 
@@ -43,7 +46,7 @@ export default class GameStore {
     return fetch(`${API_ROOT}/games`, {
       method: 'POST',
       mode: 'cors',
-      body: JSON.stringify(game),
+      body: JSON.stringify(toSnakeCase(game)),
     })
       .then(res => {
         if (res.ok) {
@@ -51,6 +54,7 @@ export default class GameStore {
         }
       })
       .then(json => json.data)
+      .then(toCamelCase)
       .catch(err => console.log(err));
   }
 
@@ -58,7 +62,7 @@ export default class GameStore {
     return fetch(`${API_ROOT}/games/${this.currentGameId}/guesses`, {
       method: 'POST',
       mode: 'cors',
-      body: JSON.stringify(guess),
+      body: JSON.stringify(toSnakeCase(guess)),
     })
       .then(res => {
         if (res.ok) {
@@ -66,6 +70,7 @@ export default class GameStore {
         }
       })
       .then(json => json.data)
+      .then(toCamelCase)
       .catch(err => console.log(err));
   }
 
@@ -73,7 +78,7 @@ export default class GameStore {
     return fetch(`${API_ROOT}/games/${this.currentGameId}/accusations`, {
       method: 'POST',
       mode: 'cors',
-      body: JSON.stringify(accusation),
+      body: JSON.stringify(toSnakeCase(accusation)),
     })
       .then(res => {
         if (res.ok) {
@@ -81,12 +86,13 @@ export default class GameStore {
         }
       })
       .then(json => json.data)
+      .then(toCamelCase)
       .catch(err => console.log(err));
   }
 
   startGame(game) {
     return this.createGame(game).then(newGame => {
-      this.currentGameId = newGame._id.$oid;
+      this.currentGameId = newGame.id.oid;
     });
   }
 }

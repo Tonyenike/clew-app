@@ -143,11 +143,11 @@ export default class NewGame extends Component {
       }
     } = this.props;
     const game = {
-      primary_player: this.primary,
+      primaryPlayer: this.primary,
       players: this.allPlayers.map(name => {
         let player = {
           name: name,
-          card_count: this.playerCardCounts.get(name),
+          cardCount: this.playerCardCounts.get(name),
         };
 
         if (name === this.primary) {

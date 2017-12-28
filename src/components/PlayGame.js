@@ -16,14 +16,14 @@ export default class PlayGame extends Component {
 
   @observable guess = {
     guesser: '',
-    was_card_shown: false,
+    wasCardShown: false,
     answerer: '',
-    card_shown: '',
+    cardShown: '',
   }
 
   @observable accusation = {
     accuser: '',
-    is_correct: false,
+    isCorrect: false,
   }
 
   @computed get cardsArr() {
@@ -37,10 +37,10 @@ export default class PlayGame extends Component {
   setPerson = (e, { value }) => this.cards.person = value;
   setWeapon = (e, { value }) => this.cards.weapon = value;
   setRoom = (e, { value }) => this.cards.room = value;
-  toggleWasCardShown = () => this.guess.was_card_shown = !this.guess.was_card_shown;
-  toggleAccusationCorrect = () => this.accusation.is_correct = !this.accusation.is_correct;
+  toggleWasCardShown = () => this.guess.wasCardShown = !this.guess.wasCardShown;
+  toggleAccusationCorrect = () => this.accusation.isCorrect = !this.accusation.isCorrect;
   setAnswerer = (e, { value }) => this.guess.answerer = value;
-  setCardShown = (e, { value }) => this.guess.card_shown = value;
+  setCardShown = (e, { value }) => this.guess.cardShown = value;
   submit = () => {
     const { store: { gameStore } } = this.props;
     if (this.turnType === 'guess') {
@@ -69,7 +69,7 @@ export default class PlayGame extends Component {
       const cardsOptions = this.cardsArr
         .filter(card => {
           const primary = this.currentGame.players
-            .find(player => player.name === this.currentGame.primary_player);
+            .find(player => player.name === this.currentGame.primaryPlayer);
           const primaryCards = [...primary.people, ...primary.weapons, ...primary.rooms];
           return primaryCards.includes(card);
         })
@@ -79,12 +79,12 @@ export default class PlayGame extends Component {
           <Form.Field>
             <Radio toggle
               label="Card Shown"
-              checked={this.guess.was_card_shown}
+              checked={this.guess.wasCardShown}
               onChange={this.toggleWasCardShown}
             />
           </Form.Field>
           {
-            this.guess.was_card_shown &&
+            this.guess.wasCardShown &&
             <Form.Field>
               <label>Answerer</label>
               <Select
@@ -97,8 +97,8 @@ export default class PlayGame extends Component {
             </Form.Field>
           }
           {
-            this.guess.was_card_shown &&
-            this.guess.answerer === this.currentGame.primary_player &&
+            this.guess.wasCardShown &&
+            this.guess.answerer === this.currentGame.primaryPlayer &&
             this.cards.person &&
             this.cards.weapon &&
             this.cards.room &&
@@ -106,7 +106,7 @@ export default class PlayGame extends Component {
               <label>Card shown</label>
               <Select
                 placeholder="Card shown"
-                value={this.guess.card_shown}
+                value={this.guess.cardShown}
                 onChange={this.setCardShown}
                 options={cardsOptions}
               />
@@ -118,7 +118,7 @@ export default class PlayGame extends Component {
         <Form.Field>
           <Radio toggle
             label="Accusation Correct"
-            checked={this.accusation.is_correct}
+            checked={this.accusation.isCorrect}
             onChange={this.toggleAccusationCorrect}
           />
         </Form.Field>
