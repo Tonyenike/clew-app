@@ -1,21 +1,15 @@
-import { computed, observable } from 'mobx';
+import { observable } from 'mobx';
 import { API_ROOT } from '../config';
 import { toCamelCase, toSnakeCase } from './JsonUtils';
 
 export default class GameStore {
   @observable games = [];
   @observable currentGameId;
+  @observable currentGame;
+  @observable notebook;
 
   constructor() {
     this.getGames();
-  }
-
-  @computed get currentGame() {
-    let game;
-    if (this.currentGameId) {
-      game = this.getGame(this.currentGameId);
-    }
-    return game;
   }
 
   getGames() {
@@ -38,6 +32,18 @@ export default class GameStore {
         }
       })
       .then(json => this.games = json.data)
+      .then(toCamelCase)
+      .catch(err => console.log(err));
+  }
+
+  getNotebook(id) {
+    return fetch(`${API_ROOT}/games/${id}/notebook`)
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then(json => json.data)
       .then(toCamelCase)
       .catch(err => console.log(err));
   }
@@ -66,6 +72,10 @@ export default class GameStore {
     })
       .then(res => {
         if (res.ok) {
+          this.getGame(this.currentGameId)
+            .then(game => this.currentGame = game);
+          this.getNotebook(this.currentGameId)
+            .then(notebook => this.notebook = notebook);
           return res.json();
         }
       })
@@ -82,6 +92,10 @@ export default class GameStore {
     })
       .then(res => {
         if (res.ok) {
+          this.getGame(this.currentGameId)
+            .then(game => this.currentGame = game);
+          this.getNotebook(this.currentGameId)
+            .then(notebook => this.notebook = notebook);
           return res.json();
         }
       })
@@ -93,6 +107,9 @@ export default class GameStore {
   startGame(game) {
     return this.createGame(game).then(newGame => {
       this.currentGameId = newGame.id.oid;
+      this.currentGame = newGame;
+      this.getNotebook(this.currentGameId)
+        .then(notebook => this.notebook = notebook);
     });
   }
 }
