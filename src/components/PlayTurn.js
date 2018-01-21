@@ -2,32 +2,43 @@ import React, { Component } from 'react';
 import { computed, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { Button, Form, Radio, Segment, Select } from 'semantic-ui-react';
 
 @observer
 export default class PlayTurn extends Component {
   @observable turnType = 'guess';
-  @observable cards = {
+
+  initialCards = {
     person: '',
     weapon: '',
     room: '',
   };
+  @observable cards = Object.assign({}, this.initialCards);
 
-  @observable guess = {
+  initialGuess = {
     guesser: '',
     wasCardShown: false,
     answerer: undefined,
     cardShown: undefined,
-  }
+  };
+  @observable guess = Object.assign({}, this.initialGuess);
 
-  @observable accusation = {
+  initialAccusation = {
     accuser: '',
     isCorrect: false,
-  }
+  };
+  @observable accusation = Object.assign({}, this.initialAccusation);
 
   @computed get cardsArr() {
     const { person, weapon, room } = this.cards;
     return [person, weapon, room];
+  }
+
+  clearFields() {
+    this.cards = Object.assign({}, this.initialCards);
+    this.guess = Object.assign({}, this.initialGuess);
+    this.accusation = Object.assign({}, this.initialAccusation);
   }
 
   toggleTurnType = (e, { value }) => this.turnType = value;
@@ -44,10 +55,18 @@ export default class PlayTurn extends Component {
     const { store: { gameStore } } = this.props;
     if (this.turnType === 'guess') {
       let guessWithCards = Object.assign(toJS(this.guess), toJS(this.cards));
-      gameStore.addGuess(guessWithCards);
+      gameStore.addGuess(guessWithCards)
+        .then(() => {
+          toast.success('Guess submitted')
+          this.clearFields();
+        });
     } else {
       let accusationWithCards = Object.assign(toJS(this.accusation), toJS(this.cards));
-      gameStore.addAccusation(accusationWithCards);
+      gameStore.addAccusation(accusationWithCards)
+        .then(() => {
+          toast.success('Accusation submitted')
+          this.clearFields();
+        });
     }
   };
 

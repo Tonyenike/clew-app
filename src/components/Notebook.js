@@ -35,7 +35,9 @@ export default class Notebook extends Component {
     } = this.props;
     let playerHeadings;
     let players;
-    if (currentGame && notebook) {
+    if (currentGame && notebook && notebook.slice().length > 0 &&
+        people.slice().length > 0 && weapons.slice().length > 0 &&
+        rooms.slice().length > 0) {
       players = currentGame.players.sort((a, b) => a.index - b.index);
       const playerNames = [...players.map(player => player.name), 'Case File'];
       playerHeadings = playerNames.map(name => <Table.HeaderCell key={name}>{name}</Table.HeaderCell>);

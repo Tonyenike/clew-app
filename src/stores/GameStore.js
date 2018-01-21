@@ -1,4 +1,4 @@
-import { observable } from 'mobx';
+import { autorun, observable, toJS } from 'mobx';
 import { API_ROOT } from '../config';
 import { toCamelCase, toSnakeCase } from './JsonUtils';
 
@@ -10,7 +10,21 @@ export default class GameStore {
 
   constructor() {
     this.getGames();
+    const storedGameId = localStorage.getItem('currentGameId');
+    if (storedGameId) {
+      this.currentGameId = storedGameId;
+      this.getGame(this.currentGameId)
+        .then(game => this.currentGame = game);
+      this.getNotebook(this.currentGameId)
+        .then(notebook => this.notebook = notebook);
+    }
   }
+
+  storage = autorun(() => {
+    if (this.currentGameId) {
+      localStorage.setItem('currentGameId', toJS(this.currentGameId));
+    }
+  });
 
   getGames() {
     return fetch(`${API_ROOT}/games`)
