@@ -108,8 +108,13 @@ export default class NewGame extends Component {
 
   setPrimary(person) {
     this.primary = person;
-    this.steps[0].active = false;
-    this.steps[1].active = true;
+    if (person) {
+      this.steps[0].active = false;
+      this.steps[1].active = true;
+    } else {
+      this.steps[0].active = true;
+      this.steps[1].active = false;
+    }
   }
 
   setCardCount(person, count) {
@@ -128,6 +133,13 @@ export default class NewGame extends Component {
     if (activeIndex+1 < this.steps.length) {
       this.steps[activeIndex].active = false;
       this.steps[activeIndex+1].active = true;
+    }
+  }
+
+  previousStep(activeIndex) {
+    if (activeIndex > 1) {
+      this.steps[activeIndex].active = false;
+      this.steps[activeIndex-1].active = true;
     }
   }
 
@@ -179,6 +191,15 @@ export default class NewGame extends Component {
         {activeIndex === 1 && this.steps[0].component()}
         {activeStep.component()}
         <Segment basic>
+        {activeIndex > 1 &&
+          <Button
+            disabled={activeIndex === 0}
+            onClick={() => this.previousStep(activeIndex)}
+            secondary
+          >
+            Previous
+          </Button>
+        }
           {activeStep.title === 'Select your cards' ?
             <Button disabled={!activeStep.completed}
               onClick={this.startGame}
