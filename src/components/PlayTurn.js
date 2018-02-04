@@ -7,7 +7,7 @@ import { Button, Form, Radio, Segment, Select } from 'semantic-ui-react';
 
 @observer
 export default class PlayTurn extends Component {
-  @observable turnType = 'guess';
+  @observable turnType = 'suggestion';
 
   initialCards = {
     person: '',
@@ -16,13 +16,13 @@ export default class PlayTurn extends Component {
   };
   @observable cards = Object.assign({}, this.initialCards);
 
-  initialGuess = {
-    guesser: '',
+  initialSuggestion = {
+    suggester: '',
     wasCardShown: false,
     answerer: undefined,
     cardShown: undefined,
   };
-  @observable guess = Object.assign({}, this.initialGuess);
+  @observable suggestion = Object.assign({}, this.initialSuggestion);
 
   initialAccusation = {
     accuser: '',
@@ -37,28 +37,28 @@ export default class PlayTurn extends Component {
 
   clearFields() {
     this.cards = Object.assign({}, this.initialCards);
-    this.guess = Object.assign({}, this.initialGuess);
+    this.suggestion = Object.assign({}, this.initialSuggestion);
     this.accusation = Object.assign({}, this.initialAccusation);
   }
 
   toggleTurnType = (e, { value }) => this.turnType = value;
-  setGuesser = (e, { value }) => this.guess.guesser = value;
+  setSuggester = (e, { value }) => this.suggestion.suggester = value;
   setAccuser = (e, { value }) => this.accusation.accuser = value;
   setPerson = (e, { value }) => this.cards.person = value;
   setWeapon = (e, { value }) => this.cards.weapon = value;
   setRoom = (e, { value }) => this.cards.room = value;
-  toggleWasCardShown = () => this.guess.wasCardShown = !this.guess.wasCardShown;
+  toggleWasCardShown = () => this.suggestion.wasCardShown = !this.suggestion.wasCardShown;
   toggleAccusationCorrect = () => this.accusation.isCorrect = !this.accusation.isCorrect;
-  setAnswerer = (e, { value }) => this.guess.answerer = value;
-  setCardShown = (e, { value }) => this.guess.cardShown = value;
+  setAnswerer = (e, { value }) => this.suggestion.answerer = value;
+  setCardShown = (e, { value }) => this.suggestion.cardShown = value;
   submit = () => {
     const { store: { gameStore } } = this.props;
-    if (this.turnType === 'guess') {
-      let guessWithCards = Object.assign(toJS(this.guess), toJS(this.cards));
-      delete guessWithCards.wasCardShown;
-      gameStore.addGuess(guessWithCards)
+    if (this.turnType === 'suggestion') {
+      let suggestionWithCards = Object.assign(toJS(this.suggestion), toJS(this.cards));
+      delete suggestionWithCards.wasCardShown;
+      gameStore.addSuggestion(suggestionWithCards)
         .then(() => {
-          toast.success('Guess submitted')
+          toast.success('Suggestion submitted')
           this.clearFields();
         });
     } else {
@@ -92,35 +92,35 @@ export default class PlayTurn extends Component {
           const primary = currentGame.players
             .find(player => player.name === currentGame.primaryPlayer);
           const primaryCards = [...primary.people, ...primary.weapons, ...primary.rooms];
-          if (this.guess.answerer === currentGame.primaryPlayer) {
+          if (this.suggestion.answerer === currentGame.primaryPlayer) {
             return primaryCards.includes(card);
           } else {
             return !primaryCards.includes(card);
           }
         })
         .map(card => ({ value: card, text: card }));
-      const guessFields = [
+      const suggestionFields = [
         <Form.Field key="wasCardShown">
           <Radio toggle
             label="Card Shown"
-            checked={this.guess.wasCardShown}
+            checked={this.suggestion.wasCardShown}
             onChange={this.toggleWasCardShown}
           />
         </Form.Field>,
-        this.guess.wasCardShown &&
+        this.suggestion.wasCardShown &&
         <Form.Field key="answerer">
           <label>Answerer</label>
           <Select
             placeholder="Answerer"
-            value={this.guess.answerer}
+            value={this.suggestion.answerer}
             onChange={this.setAnswerer}
             options={playersOptions.filter(option =>
-              option.value !== this.guess.guesser)}
+              option.value !== this.suggestion.suggester)}
           />
         </Form.Field>,
-        this.guess.wasCardShown &&
-        (this.guess.answerer === currentGame.primaryPlayer ||
-          this.guess.guesser === currentGame.primaryPlayer) &&
+        this.suggestion.wasCardShown &&
+        (this.suggestion.answerer === currentGame.primaryPlayer ||
+          this.suggestion.suggester === currentGame.primaryPlayer) &&
         this.cards.person &&
         this.cards.weapon &&
         this.cards.room &&
@@ -128,7 +128,7 @@ export default class PlayTurn extends Component {
           <label>Card shown</label>
           <Select
             placeholder="Card Shown"
-            value={this.guess.cardShown}
+            value={this.suggestion.cardShown}
             onChange={this.setCardShown}
             options={cardsOptions}
           />
@@ -148,10 +148,10 @@ export default class PlayTurn extends Component {
           <Form>
             <Form.Field>
               <Radio
-                label="Guess"
+                label="Suggestion"
                 name="choiceGroup"
-                value="guess"
-                checked={this.turnType === 'guess'}
+                value="suggestion"
+                checked={this.turnType === 'suggestion'}
                 onChange={this.toggleTurnType}
               />
             </Form.Field>
@@ -165,11 +165,11 @@ export default class PlayTurn extends Component {
               />
             </Form.Field>
             <Form.Field>
-              <label>{this.turnType === 'guess' ? 'Guesser' : 'Accuser'}</label>
+              <label>{this.turnType === 'suggestion' ? 'Suggester' : 'Accuser'}</label>
               <Select
-                placeholder={this.turnType === 'guess' ? 'Guesser' : 'Accuser'}
-                value={this.turnType === 'guess' ? this.guess.guesser : this.accusation.accuser}
-                onChange={this.turnType === 'guess' ? this.setGuesser : this.setAccuser}
+                placeholder={this.turnType === 'suggestion' ? 'Suggester' : 'Accuser'}
+                value={this.turnType === 'suggestion' ? this.suggestion.suggester : this.accusation.accuser}
+                onChange={this.turnType === 'suggestion' ? this.setSuggester : this.setAccuser}
                 options={playersOptions}
               />
             </Form.Field>
@@ -200,7 +200,7 @@ export default class PlayTurn extends Component {
                 options={rooms.map(room => ({ value: room, text: room }))}
               />
             </Form.Field>
-            {this.turnType === 'guess' && guessFields}
+            {this.turnType === 'suggestion' && suggestionFields}
             {this.turnType === 'accusation' && accusationFields}
             <Button onClick={this.submit} primary>Submit</Button>
           </Form>

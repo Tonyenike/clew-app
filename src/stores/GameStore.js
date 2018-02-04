@@ -78,11 +78,11 @@ export default class GameStore {
       .catch(err => console.log(err));
   }
 
-  addGuess(guess) {
-    return fetch(`${API_ROOT}/games/${this.currentGameId}/guesses`, {
+  addSuggestion(suggestion) {
+    return fetch(`${API_ROOT}/games/${this.currentGameId}/suggestions`, {
       method: 'POST',
       mode: 'cors',
-      body: JSON.stringify(toSnakeCase(guess)),
+      body: JSON.stringify(toSnakeCase(suggestion)),
     })
       .then(res => {
         if (res.ok) {
