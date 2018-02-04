@@ -55,6 +55,7 @@ export default class PlayTurn extends Component {
     const { store: { gameStore } } = this.props;
     if (this.turnType === 'guess') {
       let guessWithCards = Object.assign(toJS(this.guess), toJS(this.cards));
+      delete guessWithCards.wasCardShown;
       gameStore.addGuess(guessWithCards)
         .then(() => {
           toast.success('Guess submitted')
@@ -91,7 +92,11 @@ export default class PlayTurn extends Component {
           const primary = currentGame.players
             .find(player => player.name === currentGame.primaryPlayer);
           const primaryCards = [...primary.people, ...primary.weapons, ...primary.rooms];
-          return primaryCards.includes(card);
+          if (this.guess.answerer === currentGame.primaryPlayer) {
+            return primaryCards.includes(card);
+          } else {
+            return !primaryCards.includes(card);
+          }
         })
         .map(card => ({ value: card, text: card }));
       const guessFields = [
@@ -114,7 +119,8 @@ export default class PlayTurn extends Component {
           />
         </Form.Field>,
         this.guess.wasCardShown &&
-        this.guess.answerer === currentGame.primaryPlayer &&
+        (this.guess.answerer === currentGame.primaryPlayer ||
+          this.guess.guesser === currentGame.primaryPlayer) &&
         this.cards.person &&
         this.cards.weapon &&
         this.cards.room &&
