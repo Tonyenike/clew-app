@@ -1,4 +1,5 @@
 import { observable } from 'mobx';
+import { API_ROOT } from '../config';
 import { toCamelCase } from './JsonUtils';
 
 export default class CardStore {
@@ -13,7 +14,7 @@ export default class CardStore {
   }
 
   getPeople() {
-    fetch('http://localhost:5000/api/v1/people')
+    fetch(`${API_ROOT}/people`)
       .then(res => {
         if (res.ok) {
           return res.json();
@@ -25,7 +26,7 @@ export default class CardStore {
   }
 
   getWeapons() {
-    fetch('http://localhost:5000/api/v1/weapons')
+    fetch(`${API_ROOT}/weapons`)
       .then(res => {
         if (res.ok) {
           return res.json();
@@ -37,7 +38,7 @@ export default class CardStore {
   }
 
   getRooms() {
-    fetch('http://localhost:5000/api/v1/rooms')
+    fetch(`${API_ROOT}/rooms`)
       .then(res => {
         if (res.ok) {
           return res.json();
