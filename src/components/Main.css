@@ -1,0 +1,8 @@
+.hero h1 {
+  font-size: 4em;
+  margin-top: 2em;
+}
+
+.hero button {
+  width: 250px;
+}
