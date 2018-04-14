@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router';
 import { Link } from 'react-router-dom';
-import { Container } from 'semantic-ui-react';
+import { Container, Icon, Menu } from 'semantic-ui-react';
 import { ToastContainer } from 'react-toastify';
-import { Menu } from 'semantic-ui-react';
 import Main from './components/Main';
 import NewGame from './components/NewGame';
 import PlayGame from './components/PlayGame';
@@ -15,12 +14,24 @@ class App extends Component {
     return (
       <Container className="below-header">
         <ToastContainer hideProgressBar />
-        <Menu fixed="top">
+        <Menu fixed="top" icon="labeled">
           <Link to="/">
-            <Menu.Item name="Home" />
+            <Menu.Item name="home">
+              <Icon name="spy" />
+              Clew
+            </Menu.Item>
           </Link>
           <Link to="/new-game">
-            <Menu.Item name="New Game" />
+            <Menu.Item name="new-game">
+              <Icon name="add circle" />
+              New
+            </Menu.Item>
+          </Link>
+          <Link to="/play">
+            <Menu.Item name="play">
+              <Icon name="video play" />
+              Resume
+            </Menu.Item>
           </Link>
         </Menu>
         <Switch>
