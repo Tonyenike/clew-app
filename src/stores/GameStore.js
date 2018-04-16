@@ -43,6 +43,12 @@ export default class GameStore {
       .then(res => {
         if (res.ok) {
           return res.json();
+        } else {
+          if (res.status === 404) {
+            this.currentGameId = undefined;
+            localStorage.removeItem('currentGameId');
+            throw Error(res.statusText);
+          }
         }
       })
       .then(json => this.games = json.data)
@@ -55,6 +61,10 @@ export default class GameStore {
       .then(res => {
         if (res.ok) {
           return res.json();
+        } else {
+          if (res.status === 404) {
+            throw Error(res.statusText);
+          }
         }
       })
       .then(json => json.data)
