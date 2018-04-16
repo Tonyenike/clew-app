@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import { Tab } from 'semantic-ui-react';
 import PlayTurn from './PlayTurn';
 import Notebook from './Notebook';
+import TurnLog from './TurnLog';
 
 @observer
 export default class PlayGame extends Component {
@@ -15,6 +16,10 @@ export default class PlayGame extends Component {
     {
       menuItem: 'Notebook',
       pane: { key: 'brain', content: <Notebook store={this.props.store} /> },
+    },
+    {
+      menuItem: 'Turn Log',
+      pane: { key: 'turnLog', content: <TurnLog store={this.props.store} /> },
     },
   ];
 
