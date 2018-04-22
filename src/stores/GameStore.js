@@ -7,6 +7,7 @@ export default class GameStore {
   @observable currentGameId;
   @observable currentGame;
   @observable notebook;
+  @observable isFetching;
 
   constructor() {
     this.getGames();
@@ -27,6 +28,7 @@ export default class GameStore {
   });
 
   getGames() {
+    this.isFetching = true;
     return fetch(`${API_ROOT}/games`)
       .then(res => {
         if (res.ok) {
@@ -35,10 +37,12 @@ export default class GameStore {
       })
       .then(json => this.games = json.data)
       .then(games => games.map(toCamelCase))
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
+      .finally(() => this.isFetching = false);
   }
 
   getGame(id) {
+    this.isFetching = true;
     return fetch(`${API_ROOT}/games/${id}`)
       .then(res => {
         if (res.ok) {
@@ -53,10 +57,12 @@ export default class GameStore {
       })
       .then(json => this.games = json.data)
       .then(toCamelCase)
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
+      .finally(() => this.isFetching = false);
   }
 
   getNotebook(id) {
+    this.isFetching = true;
     return fetch(`${API_ROOT}/games/${id}/notebook`)
       .then(res => {
         if (res.ok) {
@@ -69,7 +75,8 @@ export default class GameStore {
       })
       .then(json => json.data)
       .then(toCamelCase)
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
+      .finally(() => this.isFetching = false);
   }
 
   createGame(game) {

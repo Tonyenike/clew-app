@@ -6,6 +6,7 @@ export default class CardStore {
   @observable people = [];
   @observable weapons = [];
   @observable rooms = [];
+  @observable isFetching;
 
   constructor() {
     this.getPeople();
@@ -14,6 +15,7 @@ export default class CardStore {
   }
 
   getPeople() {
+    this.isFetching = true;
     fetch(`${API_ROOT}/people`)
       .then(res => {
         if (res.ok) {
@@ -22,10 +24,12 @@ export default class CardStore {
       })
       .then(json => this.people = json.data)
       .then(toCamelCase)
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
+      .finally(() => this.isFetching = false);
   }
 
   getWeapons() {
+    this.isFetching = true;
     fetch(`${API_ROOT}/weapons`)
       .then(res => {
         if (res.ok) {
@@ -34,10 +38,12 @@ export default class CardStore {
       })
       .then(json => this.weapons = json.data)
       .then(toCamelCase)
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
+      .finally(() => this.isFetching = false);
   }
 
   getRooms() {
+    this.isFetching = true;
     fetch(`${API_ROOT}/rooms`)
       .then(res => {
         if (res.ok) {
@@ -46,6 +52,7 @@ export default class CardStore {
       })
       .then(json => this.rooms = json.data)
       .then(toCamelCase)
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
+      .finally(() => this.isFetching = false);
   }
 }

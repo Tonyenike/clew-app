@@ -1,19 +1,25 @@
 import React, { Component } from 'react';
-import { Route, Switch } from 'react-router';
+import { observer } from 'mobx-react';
+import { withRouter, Route, Switch } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Container, Icon, Menu } from 'semantic-ui-react';
 import { ToastContainer } from 'react-toastify';
+import * as Spinner from 'react-spinkit';
 import Main from './components/Main';
 import NewGame from './components/NewGame';
 import PlayGame from './components/PlayGame';
 import './App.css';
 
+@withRouter
+@observer
 class App extends Component {
   render() {
     const { store } = this.props;
+    const isFetching = store.gameStore.isFetching && store.cardStore.isFetching;
     return (
       <Container className="below-header">
         <ToastContainer hideProgressBar />
+        {isFetching && <Spinner className="spinner" name="cube-grid" />}
         <Menu fixed="top" icon="labeled">
           <Link to="/">
             <Menu.Item name="home">
