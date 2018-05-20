@@ -7,11 +7,14 @@ import { Feed } from 'semantic-ui-react';
 export default class TurnLog extends Component {
 
   turnToText(turn) {
+    const { store: { gameStore: { currentGame: { players } } } } = this.props;
     let text;
     if (turn.hasOwnProperty('suggester')) {
-      text = `${turn.suggester} suggested [${turn.person}, ${turn.weapon}, ${turn.room}].`;
+      const suggester = players.find(player => player.name === turn.suggester);
+      text = `${suggester.userName} (${turn.suggester}) suggested [${turn.person}, ${turn.weapon}, ${turn.room}].`;
       if (turn.answerer) {
-        text += ` Refuted by ${turn.answerer}`;
+        const answerer = players.find(player => player.name === turn.answerer);
+        text += ` Refuted by ${answerer.userName} (${turn.answerer})`;
         if (turn.cardShown) {
           text += ` using ${turn.cardShown}.`;
         } else {
@@ -19,7 +22,8 @@ export default class TurnLog extends Component {
         }
       }
     } else {
-      text = `${turn.accuser} accused [${turn.person}, ${turn.weapon}, ${turn.room}].`;
+      const accuser = players.find(player => player.name === turn.accuser);
+      text = `${accuser.userName} (${turn.accuser}) accused [${turn.person}, ${turn.weapon}, ${turn.room}].`;
       if (turn.isCorrect) {
         text += ' Accusation was correct.';
       } else {

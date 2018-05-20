@@ -4,7 +4,7 @@ import { computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Button, Segment, Step } from 'semantic-ui-react';
 import * as _ from 'lodash';
-import PlayerCardCount from './PlayerCardCount';
+import PlayerDetails from './PlayerDetails';
 import SelectPrimary from './SelectPrimary';
 import SelectOpponents from './SelectOpponents';
 import SelectCards from './SelectCards';
@@ -16,6 +16,7 @@ export default class NewGame extends Component {
   @observable selectedPlayers = new Map();
   @observable primaryCardsMap = new Map();
   @observable playerCardCounts = new Map();
+  @observable playerNames = new Map();
   @observable primary;
 
   validCardCounts = new Map([
@@ -53,15 +54,18 @@ export default class NewGame extends Component {
       },
     },
     {
-      title: 'Cards per player',
+      title: 'Player details',
       active: false,
       completed: computed(() => this.cardCountsValid),
       component: () => {
         return (
-          <PlayerCardCount players={this.allPlayers}
+          <PlayerDetails players={this.allPlayers}
             playerCardCounts={this.playerCardCounts}
             validCardCounts={this.validCardCounts}
-            onCountChange={(player, value) => this.setCardCount(player, value)} />
+            playerNames={this.playerNames}
+            onCountChange={(player, value) => this.setCardCount(player, value)}
+            onNameChange={(player, value) => this.setName(player, value)}
+          />
         );
       }
     },
@@ -121,6 +125,10 @@ export default class NewGame extends Component {
     this.playerCardCounts.set(person, count);
   }
 
+  setName(person, name) {
+    this.playerNames.set(person, name);
+  }
+
   togglePlayer(player) {
     this.selectedPlayers.set(player, !this.selectedPlayers.get(player));
   }
@@ -160,6 +168,7 @@ export default class NewGame extends Component {
         let player = {
           name: name,
           cardCount: this.playerCardCounts.get(name),
+          userName: this.playerNames.get(name),
         };
 
         if (name === this.primary) {

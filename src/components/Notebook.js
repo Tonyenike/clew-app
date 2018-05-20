@@ -40,7 +40,8 @@ export default class Notebook extends Component {
         rooms.slice().length > 0) {
       players = currentGame.players.sort((a, b) => a.index - b.index);
       const playerNames = [...players.map(player => player.name), 'Case File'];
-      playerHeadings = playerNames.map(name => <Table.HeaderCell key={name}>{name}</Table.HeaderCell>);
+      playerHeadings = players.map(player => <Table.HeaderCell key={player.name}>{player.userName}<br />({player.name})</Table.HeaderCell>);
+      playerHeadings.push(<Table.HeaderCell key="Case File">Case File</Table.HeaderCell>);
       return (
         <Table textAlign="center" celled structured>
           <Table.Header>

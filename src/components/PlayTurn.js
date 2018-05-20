@@ -85,8 +85,7 @@ export default class PlayTurn extends Component {
       }
     } = this.props;
     if (currentGame) {
-      const players = currentGame.players.map(player => player.name);
-      const playersOptions = players.map(player => ({ value: player, text: player }));
+      const playersOptions = currentGame.players.map(player => ({ value: player.name, text: `${player.userName} (${player.name})` }));
       const cardsOptions = this.cardsArr
         .filter(card => {
           const primary = currentGame.players
